@@ -1,5 +1,51 @@
 FROM alpine:3.10
 
-RUN echo "Update the base image security and install dependencies" \
-  && apk -v --update add python py-pip groff less mailcap docker \
+RUN echo "Update the base image security" \
+  && apk -v --update upgrade \
+  && apk -v --update add bash curl \
+  && rm -rf /var/cache/apk/* \
+  && true
+
+
+RUN echo "Install Docker" \
+  # docker - ref: https://wiki.alpinelinux.org/wiki/Docker
+  && apk -v --update add docker \
+  && rm -rf /var/cache/apk/* \
+  && true
+
+RUN echo "Install docker-compose" \
+  # docker-compose - ref: https://wiki.alpinelinux.org/wiki/Docker#Docker_Compose
+  && apk -v --update add py-pip python-dev libffi-dev openssl-dev gcc libc-dev make \
+  && pip install docker-compose \
+  && rm -rf /var/cache/apk/* \
+  && true
+
+
+ENV AWSCLI_VERSION "1.14.10"
+
+RUN echo "Install awscli" \
+  # aws-cli
+  && apk -v --update add python python-dev py-pip \
+  groff less mailcap \
+  && pip install awscli==$AWSCLI_VERSION --upgrade \
+  # && pip install awscli==$AWSCLI_VERSION --upgrade --user \
+  && rm -rf /var/cache/apk/* \
+  && true
+
+
+# Latest KUBECTL_VERSION here: https://storage.googleapis.com/kubernetes-release/release/stable.txt
+ENV KUBECTL_VERSION "v1.16.3"
+
+RUN echo "Install kubectl" \
+  && curl -LO https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
+  && chmod +x ./kubectl \
+  && mv ./kubectl /usr/local/bin/kubectl \
+  && true
+
+COPY --chown=root:root aws-ecr-login.sh /usr/local/bin/aws-ecr-login
+
+RUN echo "Install helper scripts and tools" \
+  && apk -v --update add bind-tools iputils \
+  && rm -rf /var/cache/apk/* \
+  && chmod +x /usr/local/bin/* \
   && true

@@ -1,20 +1,60 @@
 FROM ubuntu:bionic
 
 RUN echo "Update the base image security and install dependencies" \
-  # make apt stop whining about no interactive tty
   && export DEBIAN_FRONTEND=noninteractive \
-  && apt-get update \
-  && apt-get install -y apt-utils \
-  && apt-get upgrade -y \
-  && apt-get install -y --no-install-recommends apt-transport-https ca-certificates curl software-properties-common gpg-agent awscli \
-  && apt-get remove -y docker docker-engine docker.io containerd runc \
-  && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
-  && add-apt-repository "deb [arch=amd64,trusted=yes,allow-insecure=yes] https://download.docker.com/linux/ubuntu bionic stable" \
-  && apt-get install -y docker-ce docker-ce-cli \
-  && apt-get install -y iputils-ping dnsutils net-tools \
-  && curl -L https://github.com/docker/compose/releases/download/1.24.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose \
-  && chmod +x /usr/local/bin/docker-compose \
+  && apt-get update -qq \
+  && apt-get install -y -qq --no-install-recommends apt-utils apt-transport-https ca-certificates software-properties-common bash curl \
+  && apt-get upgrade -y -qq \
   # clean up apt caches
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
+  && true
+
+
+RUN echo "Install Docker" \
+  && export DEBIAN_FRONTEND=noninteractive \
+  && apt-get update -qq \
+  && apt-get install -y -qq --no-install-recommends gpg-agent \
+  && apt-get remove -y docker docker-engine docker.io containerd runc \
+  && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
+  && add-apt-repository "deb [arch=amd64,trusted=yes,allow-insecure=yes] https://download.docker.com/linux/ubuntu bionic stable" \
+  && apt-get install -y -qq --no-install-recommends docker-ce docker-ce-cli \
+  # clean up apt caches
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* \
+  && true
+
+
+ENV DOCKERCOMPOSE_VERSION "1.24.1"
+
+RUN echo "Install docker-compose" \
+  && curl -L https://github.com/docker/compose/releases/download/${DOCKERCOMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` -o ./docker-compose \
+  && chmod +x ./docker-compose \
+  && mv ./docker-compose /usr/local/bin/docker-compose \
+  && true
+
+
+ENV AWSCLI_VERSION "1.14.10"
+
+RUN echo "Install awscli" \
+  && export DEBIAN_FRONTEND=noninteractive \
+  && apt-get update -qq \
+  && apt-get install -y -qq --no-install-recommends python python-dev python-setuptools python-pip python-yaml \
+  groff less \
+  && pip install awscli==$AWSCLI_VERSION --upgrade \
+  # clean up apt caches
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* \
+  && true
+
+
+COPY --chown=root:root aws-ecr-login.sh /usr/local/bin/aws-ecr-login
+
+RUN echo "Install helper scripts and tools" \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends iputils-ping dnsutils net-tools \
+  # clean up apt caches
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* \
+  && chmod +x /usr/local/bin/* \
   && true
