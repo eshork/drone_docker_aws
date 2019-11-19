@@ -1,0 +1,5 @@
+FROM alpine:3.10
+
+RUN echo "Update the base image security and install dependencies" \
+  && apk -v --update add python py-pip groff less mailcap docker \
+  && true
