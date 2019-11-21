@@ -5,7 +5,8 @@ if [ -n "$DOCKER_HOST" ]; then # If we have a DOCKER_HOST defined, use that
   echo "Existing DOCKER_HOST=$DOCKER_HOST"
 else
   echo "Starting docker in docker..."
-  LOG="file" /usr/local/sbin/wrapdocker true
+  PORT=2375 /usr/local/sbin/wrapdocker &>/var/log/docker.log &
+  # LOG="file" /usr/local/sbin/wrapdocker true
 fi
 
 # Wait/loop for docker to be ready
@@ -22,9 +23,12 @@ done
 
 # Default to a bash shell if no command was given
 if [ -z "$@" ]; then
-  exec /bin/bash
+  /bin/bash --login
+  exit $?
+  # exec /bin/bash --login
 fi
 
 # Else just run the given command verbatim
 echo $@
-exec $@
+/bin/bash --login -c $@
+exit $?
