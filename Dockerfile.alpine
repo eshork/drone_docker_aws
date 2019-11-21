@@ -13,6 +13,7 @@ RUN echo "Install Docker" \
   && rm -rf /var/cache/apk/* \
   && true
 
+
 RUN echo "Install docker-compose" \
   # docker-compose - ref: https://wiki.alpinelinux.org/wiki/Docker#Docker_Compose
   && apk -v --update add py-pip python-dev libffi-dev openssl-dev gcc libc-dev make \
@@ -21,8 +22,15 @@ RUN echo "Install docker-compose" \
   && true
 
 
-ENV AWSCLI_VERSION "1.14.10"
+ADD --chown=root:root https://raw.githubusercontent.com/jpetazzo/dind/master/wrapdocker /usr/local/sbin/wrapdocker
+RUN echo "Install docker-in-docker" \
+  && apk -v --update add device-mapper \
+  && chmod +x /usr/local/sbin/wrapdocker \
+  && rm -rf /var/cache/apk/* \
+  && true
 
+
+ENV AWSCLI_VERSION "1.14.10"
 RUN echo "Install awscli" \
   # aws-cli
   && apk -v --update add python python-dev py-pip \
@@ -35,17 +43,26 @@ RUN echo "Install awscli" \
 
 # Latest KUBECTL_VERSION here: https://storage.googleapis.com/kubernetes-release/release/stable.txt
 ENV KUBECTL_VERSION "v1.16.3"
-
 RUN echo "Install kubectl" \
   && curl -LO https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
   && chmod +x ./kubectl \
   && mv ./kubectl /usr/local/bin/kubectl \
   && true
 
-COPY --chown=root:root aws-ecr-login.sh /usr/local/bin/aws-ecr-login
 
+COPY --chown=root:root aws-ecr-login.sh /usr/local/bin/aws-ecr-login
 RUN echo "Install helper scripts and tools" \
-  && apk -v --update add bind-tools iputils \
+  && apk -v --update add bind-tools iputils git \
   && rm -rf /var/cache/apk/* \
   && chmod +x /usr/local/bin/* \
+  # Slack CLI
+  && curl -O https://raw.githubusercontent.com/rockymadden/slack-cli/master/src/slack \
+  && chmod +x slack \
+  && mv slack /usr/local/bin/ \
+  # GitHub CLI
+  && pip install github-cli \
   && true
+
+
+COPY --chown=root:root docker_launch.sh /docker_launch.sh
+ENTRYPOINT [ "/docker_launch.sh" ]
