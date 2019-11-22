@@ -84,5 +84,10 @@ RUN echo "Install helper scripts and tools" \
   && true
 
 
-COPY --chown=root:root docker_launch.sh /docker_launch.sh
-ENTRYPOINT [ "/docker_launch.sh" ]
+COPY --chown=root:root tsh /bin/tsh
+RUN echo "Hijack /bin/sh" \
+  && mv /bin/sh /bin/old.sh \
+  && cp /bin/tsh /bin/sh \
+  && true
+COPY --chown=root:root docker-init.sh /docker-init.sh
+ENTRYPOINT [ "/bin/sh" ]

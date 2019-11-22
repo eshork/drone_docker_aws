@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [ -e /bin/old.sh ]; then
+  rm -f /bin/sh
+  mv /bin/old.sh /bin/sh
+fi
+/docker-init.sh || exit 254
+
+# Detect adhoc commands
+if (( "$#" >= "1" )); then
+  B1=`basename -- "$1"`
+  if [ "$1" == "$B1" ]; then
+    if which -- "$1"; then
+        /bin/sh -c "$*"
+        exit $?
+    fi
+  fi
+fi
+
+# Otherwise verbatim passthru
+/bin/sh "$@"
+exit $?
