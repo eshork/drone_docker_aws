@@ -71,9 +71,10 @@ COPY --chown=root:root aws-ecr-login.sh /usr/local/bin/aws-ecr-login
 COPY --chown=root:root checksum.sh /usr/local/bin/checksum
 COPY --chown=root:root epoch.sh /usr/local/bin/epoch
 COPY --chown=root:root docker-ensure-image.sh /usr/local/bin/docker-ensure-image
+COPY --chown=root:root kubectl-login.sh /usr/local/bin/kubectl-login
 RUN echo "Install helper scripts and tools" \
   && apt-get update \
-  && apt-get install -y --no-install-recommends iputils-ping dnsutils net-tools git wget \
+  && apt-get install -y --no-install-recommends iputils-ping dnsutils net-tools git wget jq gettext \
   # Slack CLI
   && curl -O https://raw.githubusercontent.com/rockymadden/slack-cli/master/src/slack \
   && chmod +x slack \

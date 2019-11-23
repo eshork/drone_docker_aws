@@ -10,7 +10,7 @@ A docker image for adhoc command executions within Drone.io workflows, with AWS 
 - git
 - Slack CLI (https://github.com/rockymadden/slack-cli)
 - GitHub CLI (https://github.com/jsmits/github-cli)
-- General troubleshooting (ifconfig, ping, nslookup, dig, vim)
+- General troubleshooting (ifconfig, ping, nslookup, dig, vim, jq)
 
 
 ## Surprisingly Small
@@ -24,36 +24,54 @@ if you just pull `latest`.
 Some of these are admittedly very basic, but it can be quite useful to have a known
 good set of CI related shell commands.
 
-> `checksum`
->
-> Generates an md5 checksum from all given files or from a piped stream.
->
-> Usage: \
-> `> checksum file1 file2` \
-> `c91296498ebfca9ff40ab6f1ad718125`
->
-> `> cat file1 file2 | checksum` \
-> `c91296498ebfca9ff40ab6f1ad718125`
->
+- `checksum` \
+  Generates an md5 checksum from all given files or from a piped stream. \
+  Usage:
+  ```
+  > checksum file1 file2
+  c91296498ebfca9ff40ab6f1ad718125
+  > cat file1 file2 | checksum
+  c91296498ebfca9ff40ab6f1ad718125
+  ````
 
-> `epoch`
->
-> Returns the current seconds since Unix epoch
->
-> Usage: \
-> `> epoch` \
-> `1574465913`
->
 
-> `docker-ensure-image`
->
-> Ensures the given image name/tag are available in the local docker images store.
-> Tries to pull missing images and returns a non-zero exit code when the image
-> cannot be ensured. Useful for coordinating multi-stage builds across multiple
-> Dockerfiles.
->
-> Usage: \
-> `docker-ensure-image myimage:latest \` \
-> `|| docker build -t myimage:latest .`
-> `1574465913`
->
+- `epoch` \
+  Returns the current seconds since Unix epoch \
+  Usage:
+  ```
+  > epoch
+  1574465913
+  ```
+
+
+- `docker-ensure-image` \
+  Ensures the given image name/tag are available in the local docker images store. \
+  Tries to pull missing images and returns a non-zero exit code when the image \
+  cannot be ensured. Useful for coordinating multi-stage builds across multiple \
+  Dockerfiles. \
+  Usage:
+  ```
+  > docker-ensure-image myimage:latest || docker build -t myimage:latest .
+  ```
+
+
+- `aws-ecr-login` \
+  Logs Docker in to AWS ECR, using the default AWS CLI credentials. \
+  AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION \
+  Usage:
+  ```
+  > aws-ecr-login
+  Login Succeeded
+  ```
+
+
+- `kubectl-login` \
+  Generates a kubectl config file (~/.kube/config) from KUBECTL_HOST and KUBECTL_TOKEN environment variables. \
+  Usage:
+  ```
+  > kubectl-login
+  User "drone-kube-user" set.
+  Cluster "drone-kube-cluster" set.
+  Context "drone" modified.
+  Switched to context "drone".
+  ````

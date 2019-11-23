@@ -54,8 +54,9 @@ COPY --chown=root:root aws-ecr-login.sh /usr/local/bin/aws-ecr-login
 COPY --chown=root:root checksum.sh /usr/local/bin/checksum
 COPY --chown=root:root epoch.sh /usr/local/bin/epoch
 COPY --chown=root:root docker-ensure-image.sh /usr/local/bin/docker-ensure-image
+COPY --chown=root:root kubectl-login.sh /usr/local/bin/kubectl-login
 RUN echo "Install helper scripts and tools" \
-  && apk -v --update add bind-tools iputils git \
+  && apk -v --update add bind-tools iputils git jq gettext \
   && rm -rf /var/cache/apk/* \
   && chmod +x /usr/local/bin/* \
   # Slack CLI
