@@ -68,6 +68,9 @@ RUN echo "Install kubectl" \
 
 
 COPY --chown=root:root aws-ecr-login.sh /usr/local/bin/aws-ecr-login
+COPY --chown=root:root checksum.sh /usr/local/bin/checksum
+COPY --chown=root:root epoch.sh /usr/local/bin/epoch
+COPY --chown=root:root docker-ensure-image.sh /usr/local/bin/docker-ensure-image
 RUN echo "Install helper scripts and tools" \
   && apt-get update \
   && apt-get install -y --no-install-recommends iputils-ping dnsutils net-tools git wget \
