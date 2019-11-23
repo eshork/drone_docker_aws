@@ -9,7 +9,7 @@ A docker image for adhoc command executions within Drone.io workflows, with AWS 
 - awscli
 - git
 - Slack CLI (https://github.com/rockymadden/slack-cli)
-- GitHub CLI (https://github.com/jsmits/github-cli)
+- GitHub CLI (https://github.com/stephencelis/ghi)
 - General troubleshooting (ifconfig, ping, nslookup, dig, vim, jq)
 
 

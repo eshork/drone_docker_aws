@@ -74,13 +74,15 @@ COPY --chown=root:root docker-ensure-image.sh /usr/local/bin/docker-ensure-image
 COPY --chown=root:root kubectl-login.sh /usr/local/bin/kubectl-login
 RUN echo "Install helper scripts and tools" \
   && apt-get update \
-  && apt-get install -y --no-install-recommends iputils-ping dnsutils net-tools git wget jq gettext \
+  && apt-get install -y --no-install-recommends iputils-ping dnsutils net-tools \
+  git wget jq gettext \
+  ruby rubygems \
   # Slack CLI
   && curl -O https://raw.githubusercontent.com/rockymadden/slack-cli/master/src/slack \
   && chmod +x slack \
   && mv slack /usr/local/bin/ \
   # GitHub CLI
-  && pip install wheel && pip install github-cli \
+  && gem install ghi -v 1.2.0 \
   # clean up apt caches
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
