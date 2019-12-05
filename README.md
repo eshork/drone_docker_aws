@@ -75,3 +75,10 @@ good set of CI related shell commands.
   Context "drone" modified.
   Switched to context "drone".
   ````
+
+- `github-login` \
+  Generates config files for GitHub CLI tools (~/.gitconfig and ~/.config/hub) from GITHUB_USERNAME and GITHUB_TOKEN environment variables. \
+  Usage:
+  ```
+  > github-login
+  ````
