@@ -67,8 +67,12 @@ RUN echo "Install helper scripts and tools" \
   && curl -O https://raw.githubusercontent.com/rockymadden/slack-cli/master/src/slack \
   && chmod +x slack \
   && mv slack /usr/local/bin/ \
-  # GitHub CLI
+  # GitHub CLI (both ghi and hub)
   && apk -v --update add ghi \
+  && (cd /tmp; wget https://github.com/github/hub/releases/download/v2.13.0/hub-linux-386-2.13.0.tgz) \
+  && (cd /tmp; tar zxf hub-linux-386-2.13.0.tgz) \
+  && (cd /tmp/hub-linux-386-2.13.0/bin; chown root:root hub; mv hub /usr/local/bin/hub) \
+  && (cd /tmp; rm hub-linux-386-2.13.0.tgz; rm -r hub-linux-386-2.13.0) \
   # cleanup
   && rm -rf /var/cache/apk/* \
   && true
