@@ -60,8 +60,10 @@ COPY --chown=root:root checksum.sh /usr/local/bin/checksum
 COPY --chown=root:root epoch.sh /usr/local/bin/epoch
 COPY --chown=root:root docker-ensure-image.sh /usr/local/bin/docker-ensure-image
 COPY --chown=root:root kubectl-login.sh /usr/local/bin/kubectl-login
+COPY --chown=root:root github-login.sh /usr/local/bin/github-login
+COPY --chown=root:root ssh-debug-session.sh /usr/local/bin/ssh-debug-session
 RUN echo "Install helper scripts and tools" \
-  && apk -v --update add bind-tools iputils git jq gettext \
+  && apk -v --update add bind-tools iputils git jq gettext openssh-server \
   && chmod +x /usr/local/bin/* \
   # Slack CLI
   && curl -O https://raw.githubusercontent.com/rockymadden/slack-cli/master/src/slack \
@@ -73,8 +75,15 @@ RUN echo "Install helper scripts and tools" \
   && (cd /tmp; tar zxf hub-linux-386-2.13.0.tgz) \
   && (cd /tmp/hub-linux-386-2.13.0/bin; chown root:root hub; mv hub /usr/local/bin/hub) \
   && (cd /tmp; rm hub-linux-386-2.13.0.tgz; rm -r hub-linux-386-2.13.0) \
+  # ngrok
+  && (cd /tmp; wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip) \
+  && (cd /tmp; unzip ngrok-stable-linux-amd64.zip) \
+  && (cd /tmp; chown root:root ngrok; mv ngrok /usr/local/bin/ngrok) \
+  && (cd /tmp; rm ngrok-stable-linux-amd64.zip) \
   # cleanup
   && rm -rf /var/cache/apk/* \
+  && chmod +x /usr/local/bin/* \
+  && rm -rf /tmp/* \
   && true
 
 
